@@ -7,16 +7,34 @@ require("dotenv").config();
 app.use(express.json());
 
 // CORS Headers
-app.use((req, res, next) => {
-  res.setHeader(
-    "Access-Control-Allow-Origin",
-    "https://aly-training.myshopify.com"
-  );
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  if (req.method === "OPTIONS") {
-    return res.status(200).end();
+// app.use((req, res, next) => {
+//   res.setHeader(
+//     "Access-Control-Allow-Origin",
+//     "https://aly-training.myshopify.com"
+//   );
+//   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+//   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+//   if (req.method === "OPTIONS") {
+//     return res.status(200).end();
+//   }
+//   next();
+// });
+
+app.use(bodyParser.json());
+
+const CORS_ALLOW_LIST = process.env.CORS_ALLOW_LIST?.split(",") || [
+  "https://aly-training.myshopify.com",
+];
+
+app.use(function (req, res, next) {
+  const allowList = CORS_ALLOW_LIST;
+  const origin = req.headers.origin || "";
+  if (allowList.includes(origin)) {
+    res.header("Access-Control-Allow-Origin", origin);
   }
+  res.header("Access-Control-Allow-Headers", "*");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  res.header("Access-Control-Allow-Credentials", true);
   next();
 });
 
